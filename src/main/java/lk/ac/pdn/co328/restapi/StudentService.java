@@ -28,10 +28,11 @@ public class StudentService
 
     @PUT
     @Path("student/{id}")
-    @Consumes("application/xml")
+    @Consumes("application/json")
     public Response modifyStudent(@PathParam("id") int id, Student input)
     {
-        if(input == null) {
+        Student st = register.findStudent(id);
+        if(st == null) {
             try {
                 register.addStudent(input);
             } catch (Exception e) {

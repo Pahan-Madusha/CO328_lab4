@@ -13,14 +13,22 @@ and open the template in the editor.
     </head>
     <body>
         <h1>Simple Client For Student System</h1>
+
         <div id="status" ></div>
+        <div></div><br>
         <div id="result" ></div>
-        
+        <div id="st_id" ></div>
+        <div id="f_name" ></div>
+        <div id="l_name" ></div><br>
+
         ID:<br>
         <input type="text" id="id_field"><br>
-        Name:<br>
-        <input type="text" id="name_field"><br>
+        First Name:<br>
+        <input type="text" id="fname"><br>
+        Last Name:<br>
+        <input type="text" id="lname"><br>
 
+        <br>
         <button onclick="getData()">GET</button>
         <button onclick="postData()">POST</button>
         <button onclick="putData()">PUT</button>
@@ -33,12 +41,16 @@ and open the template in the editor.
                 $.ajax({
                     url: '../rest/student/' + $("#id_field").val(),
                     type: 'GET',
+                    dataType: 'json',
                     success: function(data,status,response) {
-                       var object = response.responseJSON;
-                       document.getElementById("result").innerHTML= JSON.stringify(object);
+                       document.getElementById("result").innerHTML= 'Status : ' + status;
+                       document.getElementById("st_id").innerHTML= 'ID :' + response.responseJSON.student.id;
+                       document.getElementById("f_name").innerHTML= 'First Name : ' + response.responseJSON.student.firstName;
+                       document.getElementById("l_name").innerHTML= 'Last Name : ' + response.responseJSON.student.lastName;
                     },
                     error: function(xhr, status, text) {
-                       document.getElementById("result").innerHTML=text;
+                        document.getElementById("result").innerHTML= 'Status : ' + status;
+                        reset();
                     }
                   });
             }
@@ -47,20 +59,22 @@ and open the template in the editor.
             {
                     var requestData = { "student":{
                                         id: $("#id_field").val(),
-                                        firstName: $("#name_field").val(),
-                                        lastName: $("#name_field").val(),
+                                        firstName: $("#fname").val(),
+                                        lastName: $("#lname").val()
                                     }
-                                }
+                                };
                   $.ajax({
                     url: '../rest/student/new',
                     type: 'POST',
                     data: JSON.stringify(requestData),
                     contentType:'application/json; charset=UTF-8',
                     success: function(response,status) {
-                        document.getElementById("result").innerHTML= status;
+                        document.getElementById("result").innerHTML= 'Status : ' + status;
+                        reset();
                     },
                     error: function(xhr, status, text) {
-                        document.getElementById("result").innerHTML=text;
+                        document.getElementById("result").innerHTML= 'Status : ' + status;
+                        reset();
                     }
                   });
                  
@@ -68,14 +82,52 @@ and open the template in the editor.
                         
             function deleteData()
             {
-                document.getElementById("result").innerHTML="delete data";
+                $.ajax({
+                    url: '../rest/student/' + $("#id_field").val(),
+                    type: 'DELETE',
+                    success: function(data,status,response) {
+                        var object = JSON.stringify(status);
+                        document.getElementById("result").innerHTML= 'Status : ' + status;
+                        reset();
+                    },
+                    error: function(xhr, status, text) {
+                        document.getElementById("result").innerHTML= 'Status : ' + status;
+                        reset();
+                    }
+                });
             }
                         
             function putData()
             {
-                document.getElementById("result").innerHTML="put data";
+                var id = $("#id_field").val();
+                var requestData = { "student":{
+                    id: id,
+                    firstName: $("#fname").val(),
+                    lastName: $("#lname").val()
+                    }
+                };
+                $.ajax({
+                    url: '../rest/student/' + id,
+                    type: 'PUT',
+                    data: JSON.stringify(requestData),
+                    contentType:'application/json; charset=UTF-8',
+                    success: function(response,status) {
+                        document.getElementById("result").innerHTML= 'Status : ' + status;
+                        reset();
+                    },
+                    error: function(xhr, status, text) {
+                        document.getElementById("result").innerHTML= 'Status : ' + status;
+                        reset();
+                    }
+                });
+            }
+
+            function reset()
+            {
+                document.getElementById("st_id").innerHTML= '';
+                document.getElementById("f_name").innerHTML= '';
+                document.getElementById("l_name").innerHTML= '';
             }
         </script>
-        
     </body>
 </html>
