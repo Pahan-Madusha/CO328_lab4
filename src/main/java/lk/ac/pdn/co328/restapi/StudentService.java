@@ -2,6 +2,7 @@
 package lk.ac.pdn.co328.restapi;
 import lk.ac.pdn.co328.studentSystem.Student;
 import lk.ac.pdn.co328.studentSystem.StudentRegister;
+import lk.ac.pdn.co328.studentSystem.dbimplementation.DerbyStudentRegister;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.*;
@@ -12,7 +13,18 @@ import lk.ac.pdn.co328.studentSystem.arraylistimplementation.ArraylistStudentReg
 @Path("rest")
 public class StudentService
 {
-    private static StudentRegister register = new ArraylistStudentRegister();
+    private static StudentRegister register;
+
+    public StudentService()
+    {
+        try {
+            register = new DerbyStudentRegister();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
+    }
 
     @GET
     @Path("student/{id}")
@@ -72,7 +84,7 @@ public class StudentService
     @Path("student/new")
     @Consumes(MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML)
     public Response addStudent(Student input) {
-        if (input != (null)) {
+        if (input != (null) && register != null) {
             try {
                 register.addStudent(input);
                 return Response.status(HttpResponseCodes.SC_OK).build();

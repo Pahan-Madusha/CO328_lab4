@@ -5,28 +5,28 @@
  */
 package lk.ac.pdn.co328.studentSystem.dbimplementation;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import lk.ac.pdn.co328.studentSystem.Student;
 import lk.ac.pdn.co328.studentSystem.StudentRegister;
 
 /**
  *
- * @author himesh
+ * @author pahan
  */
 public class DerbyStudentRegister extends StudentRegister {
 
     Connection connection = null;
     public DerbyStudentRegister() throws SQLException
     {
-            String dbURL1 = "jdbc:derby:codejava/studentDB;create=true";
-            connection = DriverManager.getConnection(dbURL1);
-            if (connection != null)
+        DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
+
+        String dbURL1 = "jdbc:derby:codejava/studentDB;create=true";
+        connection = DriverManager.getConnection(dbURL1);
+
+        if (connection != null)
             {
-                String SQL_CreateTable = "CREATE TABLE Students(id INT , name VARCHAR(24))";
+                String SQL_CreateTable = "CREATE TABLE Students(id INT , fname VARCHAR(24), lname VARCHAR(24))";
                 System.out.println ( "Creating table addresses..." );
                 try 
                 {
@@ -50,7 +50,7 @@ public class DerbyStudentRegister extends StudentRegister {
     public void addStudent(Student st) throws Exception {
         if (connection != null)
         {
-            String SQL_AddStudent = "INSERT INTO Students VALUES (" + st.getId() + ",'" + st.getFirstName() + "')";
+            String SQL_AddStudent = "INSERT INTO Students VALUES (" + st.getId() + ",'" + st.getFirstName() + "','" + st.getLastName() + "')";
             System.out.println ( "Adding the student..." + SQL_AddStudent);
 
             Statement stmnt = connection.createStatement();
@@ -72,7 +72,32 @@ public class DerbyStudentRegister extends StudentRegister {
 
     @Override
     public Student findStudent(int regNo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        Student st = null;
+        try
+        {
+            String SQL_FindStudent = "SELECT * FROM Students WHERE Students.id = " + regNo ;
+            System.out.println("Adding the student..." + SQL_FindStudent);
+
+            Statement stmnt = connection.createStatement();
+            ResultSet rs = stmnt.executeQuery(SQL_FindStudent);
+
+            int id;
+            String fname, lname;
+            if(rs != null && rs.next())
+            {
+                id = rs.getInt("id");
+                fname = rs.getString("fname");
+                lname = rs.getString("lname");
+                st = new Student(id, fname, lname);
+            }
+            return st;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
+        return null;
     }
 
     @Override
