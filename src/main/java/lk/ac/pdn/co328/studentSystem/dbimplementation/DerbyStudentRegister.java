@@ -20,13 +20,13 @@ public class DerbyStudentRegister extends StudentRegister {
     public DerbyStudentRegister() throws SQLException
     {
         DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-
-        String dbURL1 = "jdbc:derby:codejava/studentDB;create=true";
+        String dbURL1 = "jdbc:derby:codejava/studentDB";
         connection = DriverManager.getConnection(dbURL1);
 
         if (connection != null)
             {
-                String SQL_CreateTable = "CREATE TABLE Students(id INT , fname VARCHAR(24), lname VARCHAR(24))";
+                //String SQL_CreateTable = "DROP TABLE Students";
+                String SQL_CreateTable = "CREATE TABLE Students(id INT , fname VARCHAR(24), lname VARCHAR(24), PRIMARY KEY (id))";
                 System.out.println ( "Creating table addresses..." );
                 try 
                 {
@@ -47,7 +47,8 @@ public class DerbyStudentRegister extends StudentRegister {
     }
     
     @Override
-    public void addStudent(Student st) throws Exception {
+    public void addStudent(Student st) throws Exception
+    {
         if (connection != null)
         {
             String SQL_AddStudent = "INSERT INTO Students VALUES (" + st.getId() + ",'" + st.getFirstName() + "','" + st.getLastName() + "')";
@@ -66,18 +67,30 @@ public class DerbyStudentRegister extends StudentRegister {
     }
 
     @Override
-    public void removeStudent(int regNo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void removeStudent(int regNo)
+    {
+        try
+        {
+            String SQL_RemoveStudent = "DELETE FROM Students WHERE Students.id = " + regNo;
+            System.out.println("Removing the student..." + SQL_RemoveStudent);
+
+            Statement stmnt = connection.createStatement();
+            stmnt.execute(SQL_RemoveStudent);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
     }
 
     @Override
-    public Student findStudent(int regNo) {
-
+    public Student findStudent(int regNo)
+    {
         Student st = null;
         try
         {
             String SQL_FindStudent = "SELECT * FROM Students WHERE Students.id = " + regNo ;
-            System.out.println("Adding the student..." + SQL_FindStudent);
+            System.out.println("Finding student..." + SQL_FindStudent);
 
             Statement stmnt = connection.createStatement();
             ResultSet rs = stmnt.executeQuery(SQL_FindStudent);
@@ -101,18 +114,89 @@ public class DerbyStudentRegister extends StudentRegister {
     }
 
     @Override
-    public void reset() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void reset()
+    {
+        try
+        {
+            String SQL_Reset = "DROP TABLE Students";
+            System.out.println("Resetting register..." + SQL_Reset);
+
+            Statement stmnt = connection.createStatement();
+            stmnt.execute(SQL_Reset); // drop current table
+
+            String new_table = "CREATE TABLE Students(id INT , fname VARCHAR(24), lname VARCHAR(24), PRIMARY KEY (id))";
+            stmnt = connection.createStatement();
+            stmnt.execute(new_table); // create new table
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
     }
 
     @Override
-    public ArrayList<Student> findStudentsByName(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ArrayList<Student> findStudentsByName(String name)
+    {
+        Student st = null;
+        ArrayList<Student> list = new ArrayList<Student>();
+        try
+        {
+            String SQL_FindStudents = "SELECT * FROM Students WHERE Students.lname = '" + name +"' OR Students.fname = '" + name + "'";
+            System.out.println("Finding students..." + SQL_FindStudents);
+
+            Statement stmnt = connection.createStatement();
+            ResultSet rs = stmnt.executeQuery(SQL_FindStudents);
+
+            int id;
+            String fname, lname;
+
+            if(rs != null)
+                while(rs.next())
+                {
+                    id = rs.getInt("id");
+                    fname = rs.getString("fname");
+                    lname = rs.getString("lname");
+                    st = new Student(id, fname, lname);
+                    list.add(st);
+                }
+
+            return list;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
+        return null;
     }
 
     @Override
-    public ArrayList<Integer> getAllRegistrationNumbers() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ArrayList<Integer> getAllRegistrationNumbers()
+    {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        try
+        {
+            String SQL_FindRegNos = "SELECT id FROM Students";
+            System.out.println("Finding Registration numbers..." + SQL_FindRegNos);
+
+            Statement stmnt = connection.createStatement();
+            ResultSet rs = stmnt.executeQuery(SQL_FindRegNos);
+
+            int id;
+
+            if(rs != null)
+                while(rs.next())
+                {
+                    id = rs.getInt("id");
+                    list.add(id);
+                }
+
+            return list;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
+        return null;
     }
     
 }

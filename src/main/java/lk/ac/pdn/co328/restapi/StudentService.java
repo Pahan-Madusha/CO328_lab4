@@ -96,4 +96,11 @@ public class StudentService
             return Response.status(HttpResponseCodes.SC_BAD_REQUEST).build();
         }
     }
+
+    @HEAD
+    @Path("student/")
+    public Response reset() {
+        register.reset();
+        return Response.status(HttpResponseCodes.SC_ACCEPTED).build();
+    }
 }

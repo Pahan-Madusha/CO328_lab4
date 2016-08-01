@@ -33,7 +33,8 @@ and open the template in the editor.
         <button onclick="postData()">POST</button>
         <button onclick="putData()">PUT</button>
         <button onclick="deleteData()">DELETE</button>
-        
+        <button onclick="reset()">RESET</button>
+
         <script type="text/javascript">
             
             function getData()
@@ -50,7 +51,7 @@ and open the template in the editor.
                     },
                     error: function(xhr, status, text) {
                         document.getElementById("result").innerHTML= 'Status : ' + status;
-                        reset();
+                        clear();
                     }
                   });
             }
@@ -70,11 +71,11 @@ and open the template in the editor.
                     contentType:'application/json; charset=UTF-8',
                     success: function(response,status) {
                         document.getElementById("result").innerHTML= 'Status : ' + status;
-                        reset();
+                        clear();
                     },
                     error: function(xhr, status, text) {
                         document.getElementById("result").innerHTML= 'Status : ' + status;
-                        reset();
+                        clear();
                     }
                   });
                  
@@ -88,11 +89,11 @@ and open the template in the editor.
                     success: function(data,status,response) {
                         var object = JSON.stringify(status);
                         document.getElementById("result").innerHTML= 'Status : ' + status;
-                        reset();
+                        clear();
                     },
                     error: function(xhr, status, text) {
                         document.getElementById("result").innerHTML= 'Status : ' + status;
-                        reset();
+                        clear();
                     }
                 });
             }
@@ -113,21 +114,40 @@ and open the template in the editor.
                     contentType:'application/json; charset=UTF-8',
                     success: function(response,status) {
                         document.getElementById("result").innerHTML= 'Status : ' + status;
-                        reset();
+                        clear();
                     },
                     error: function(xhr, status, text) {
                         document.getElementById("result").innerHTML= 'Status : ' + status;
-                        reset();
+                        clear();
                     }
                 });
             }
 
             function reset()
             {
+                $.ajax({
+                    url: '../rest/student/',
+                    type: 'HEAD',
+                    success: function(data,status,response) {
+                        document.getElementById("result").innerHTML= 'Status : Register reset!';
+                        clear();
+                    },
+                    error: function(xhr, status, text) {
+                        document.getElementById("result").innerHTML= 'Status : Some error occured!';
+                        clear();
+                    }
+                });
+            }
+
+            function clear()
+            {
                 document.getElementById("st_id").innerHTML= '';
                 document.getElementById("f_name").innerHTML= '';
                 document.getElementById("l_name").innerHTML= '';
             }
+
+
+
         </script>
     </body>
 </html>
