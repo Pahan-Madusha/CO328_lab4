@@ -44,13 +44,9 @@ public class StudentService
     public Response modifyStudent(@PathParam("id") int id, Student input)
     {
         Student st = register.findStudent(id);
-        if(st == null) {
-            try {
-                register.addStudent(input);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return Response.status(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR).build();
-            }
+        if(st == null)
+        {
+            return Response.status(HttpResponseCodes.SC_NOT_FOUND).build();
         }
         else{
             register.removeStudent(id);
@@ -58,7 +54,7 @@ public class StudentService
                 register.addStudent(input);
             } catch (Exception e) {
                 e.printStackTrace();
-                return Response.status(HttpResponseCodes.SC_FOUND).entity("Error.Student is modified.").build();
+                return Response.status(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE).entity("Error.Student is modified.").build();
             }
         }
         return Response.status(HttpResponseCodes.SC_OK).build();
@@ -90,10 +86,10 @@ public class StudentService
                 return Response.status(HttpResponseCodes.SC_OK).build();
             } catch (Exception e) {
                 e.printStackTrace();
-                return Response.status(HttpResponseCodes.SC_BAD_REQUEST).build();
+                return Response.status(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR).build();
             }
         }else{
-            return Response.status(HttpResponseCodes.SC_BAD_REQUEST).build();
+            return Response.status(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE).build();
         }
     }
 
